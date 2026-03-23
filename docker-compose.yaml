@@ -1,0 +1,43 @@
+# сервисы описывает каждый контейнер. Ну думаю далее понятно
+services:
+  #отдельный контейнер итд
+  postgres:
+  # имадж подгружает образ докер файла(?). Конкретно это оф образ пскл с докер хаба
+    image: postgres:16.13-bookworm
+  # название для контейнера
+    container_name: postnikov_rest-env-postgres
+  # переменные окружения в оболочке контейнера. ${var} - локальная переменная ОС
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+  
+  # эта штука коннектит порт локалки с портом образа. Челик по гайду предлагает делать иначе -- делать отдельный образ, через который
+  # он собирается подключаться. Утилка называется socat
+  # ports:
+  #    - "5432:5432"
+
+  # вольюмс сохраняет данные из контейнера в папку проекта по образу (путь внутри проекта):(путь внутри контейнера)
+  # в данном случае проджект рут это локальная локальная переменная ведущая к пвд открытому в вске проекту.
+  # нужно оно для того, чтобы без препятственно перемещать йамл файйл
+    volumes:
+      - ${PROJECT_ROOT}/out/pgdata:/var/lib/postgresql
+  # рестарт нужен чтобы не рестартить контейнер каждый раз лол.
+    restart: always
+  
+
+  postgres-migrate:
+    image: migrate/migrate:v4.19.1
+    volumes:
+      - ${PROJECT_ROOT}/migrations:/migrations
+    
+
+  port-forwarder:
+    image: alpine/socat:1.8.0.3
+    container_name: postnikov_rest-postgres-port_forwarder
+    command: tcp-listen:5432,fork,reuseaddr tcp-connect:postgres:5432
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  pgdata:
