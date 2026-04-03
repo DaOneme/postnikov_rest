@@ -1,0 +1,3 @@
+import metrics
+
+metrics.main()
