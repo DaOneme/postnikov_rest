@@ -55,7 +55,7 @@ to_go 				BOOL		DEFAULT FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS restaurant_app.orders_items (
+CREATE TABLE IF NOT EXISTS restaurant_app.order_items (
 id					SERIAL		PRIMARY KEY,
 order_id			INT			REFERENCES restaurant_app.orders(id),
 item				INT			REFERENCES restaurant_app.restaurant_menu(id),
