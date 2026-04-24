@@ -1,15 +1,13 @@
 import psycopg2
-from psycopg2.extras import LoggingConnection
-
 import os
-import logging
+
+# для ювикорна, иначе он не видит енв
+from dotenv import load_dotenv
+load_dotenv()
 
 
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-dir = f'{os.getcwd()}/src/database/scripts'
+DIR = f'{os.getcwd()}/src/database/scripts'
 
 db_connection = {"database" : os.environ.get('POSTGRES_DB'),
               "user" : os.environ.get('POSTGRES_USER'),
@@ -20,17 +18,36 @@ db_connection = {"database" : os.environ.get('POSTGRES_DB'),
 
 
 
+def connect():
+    conn_params = db_connection    
+    return psycopg2.connect(**conn_params)
+
+def read(script: str, dir: str = DIR, subdir: str = '') -> str:
+    '''
+    func return's .sql script from src/database/scripts folder\n
+    for script you must enter "file_name.sql"\n
+    for dir you must enter root dir. Usuall DIR will lead from /root to the main DB dir of project\n
+    for subdir you must enter the dir between ../scripts and file_name.sql. This made for dir specification 
+    '''
+    
+    with open(f'{dir}{subdir}/{script}', 'r') as f:
+        return f.read()
+
+
+
 def init():
-    with psycopg2.connect(**db_connection, connection_factory=LoggingConnection) as conn:
-        conn.initialize(logger)
-        
-        with conn.cursor() as cur:
-            with open(f'{dir}/init.sql', 'r') as f:
-                cur.execute(f.read())
+    conn = connect()
+    
+    with conn.cursor() as cur:
+        cur.execute(read('init.sql'))
+        print("DB inited succesfull ")
 
-            with open(f'{dir}/insert.sql', 'r') as f:
-                cur.execute(f.read())
-
+        try:
+            cur.execute(read('insert.sql'))
+            print("DB insert succesfull")
+            
+        except:
+            print("DB insert error, probably duplicated data")
 
 
 
