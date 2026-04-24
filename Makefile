@@ -5,15 +5,21 @@ export PROJECT_ROOT=${shell pwd}
 
 start:
 	make env-up
+	make deploy
+	docker ps -a
+
+start-dev:
+	make env-up
 	make env-port-forward
 	docker ps -a
-	
+
 stop:
-	make env-down
-	make env-port-close
+	docker compose down -v 
 	docker ps -a
 
 
+deploy:
+	docker compose up -d --build app
 
 env-up:
 	docker compose up -d postgres

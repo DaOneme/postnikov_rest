@@ -12,7 +12,7 @@ DIR = f'{os.getcwd()}/src/database/scripts'
 db_connection = {"database" : os.environ.get('POSTGRES_DB'),
               "user" : os.environ.get('POSTGRES_USER'),
               "password" : os.environ.get('POSTGRES_PASSWORD'),
-              "host" : 'localhost',
+              "host" : 'postgres',
               "port" : '5432'
             }
 
