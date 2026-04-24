@@ -6,9 +6,8 @@ CREATE TABLE IF NOT EXISTS restaurant_app.users (
     name 	VARCHAR(30) NOT NULL 	CHECK (CHARACTER_LENGTH(name) BETWEEN 2 AND 30),
     surname VARCHAR(30) 			CHECK (CHARACTER_LENGTH(surname) BETWEEN 2 AND 30),
     
-    phone 	VARCHAR(15) 			CHECK (
-        phone ~ '^\+[0-9]+$' AND
-        CHARACTER_LENGTH(phone) BETWEEN 10 AND 15
+    phone 	VARCHAR(20) 			CHECK (
+        CHARACTER_LENGTH(phone) BETWEEN 10 AND 20
     ),
     
     email 	VARCHAR(50) NOT NULL 	CHECK (
